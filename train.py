@@ -50,41 +50,41 @@ def train(args):
 
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
 
-    # # Training loop
-    # for epoch in range(1, args.epochs + 1):
-    #     model.train()
-    #     optimizer.zero_grad()
-    #     if args.model == 'GraphSAGE':
-    #         out = model(data.x_dict, data.edge_index_dict)
-    #     elif args.model == 'HAN':
-    #         out, att = model(inputs_list, biases_list)
-    #     # print(out.shape)
-    #     # print(y)
-    #
-    #     loss = F.cross_entropy(out[train_idx], y[train_idx])
-    #     loss.backward()
-    #     optimizer.step()
-    #
-    #     # Evaluation
-    #     model.eval()
-    #     with torch.no_grad():
-    #         if args.model == 'GraphSAGE':
-    #             out = model(data.x_dict, data.edge_index_dict)
-    #         elif args.model == 'HAN':
-    #             out, att = model(inputs_list, biases_list)
-    #         pred = out.argmax(dim=1)
-    #         val_acc = (pred[val_idx] == y[val_idx]).sum().item() / val_idx.sum().item()
-    #         test_acc = (pred[test_idx] == y[test_idx]).sum().item() / test_idx.sum().item()
-    #
-    #
-    #     if epoch % args.log_every == 0 or epoch == 1:
-    #         print(f"Epoch {epoch:03d}, Loss: {loss.item():.4f}, Val Acc: {val_acc:.4f}, Test Acc: {test_acc:.4f}")
-    #         # AUC plot
-    #         # plot_multiclass_roc(y[test_idx], F.softmax(out[test_idx], dim=1), num_classes=4)
-    #         pred = out.argmax(dim=1).cpu().numpy()
-    #         true = y.cpu().numpy()
-    #         macro_f1 = f1_score(true[test_idx.cpu().numpy()], pred[test_idx.cpu().numpy()], average='macro')
-    #         print(macro_f1)
+    # Training loop
+    for epoch in range(1, args.epochs + 1):
+        model.train()
+        optimizer.zero_grad()
+        if args.model == 'GraphSAGE':
+            out = model(data.x_dict, data.edge_index_dict)
+        elif args.model == 'HAN':
+            out, att = model(inputs_list, biases_list)
+        # print(out.shape)
+        # print(y)
+
+        loss = F.cross_entropy(out[train_idx], y[train_idx])
+        loss.backward()
+        optimizer.step()
+
+        # Evaluation
+        model.eval()
+        with torch.no_grad():
+            if args.model == 'GraphSAGE':
+                out = model(data.x_dict, data.edge_index_dict)
+            elif args.model == 'HAN':
+                out, att = model(inputs_list, biases_list)
+            pred = out.argmax(dim=1)
+            val_acc = (pred[val_idx] == y[val_idx]).sum().item() / val_idx.sum().item()
+            test_acc = (pred[test_idx] == y[test_idx]).sum().item() / test_idx.sum().item()
+
+
+        if epoch % args.log_every == 0 or epoch == 1:
+            print(f"Epoch {epoch:03d}, Loss: {loss.item():.4f}, Val Acc: {val_acc:.4f}, Test Acc: {test_acc:.4f}")
+            # AUC plot
+            # plot_multiclass_roc(y[test_idx], F.softmax(out[test_idx], dim=1), num_classes=4)
+            pred = out.argmax(dim=1).cpu().numpy()
+            true = y.cpu().numpy()
+            macro_f1 = f1_score(true[test_idx.cpu().numpy()], pred[test_idx.cpu().numpy()], average='macro')
+            print(macro_f1)
 
 if __name__ == '__main__':
     args = arg_parse()
